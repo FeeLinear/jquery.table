@@ -197,6 +197,10 @@ $(".insert_table").setJQueryTable(xData, yData, cData, options);
 	            console.log(msg);
 	        }
 	})
+	$.getJSON("json/data.json", function(json){
+	    console.log(json);
+	});
+	$.getScript("js/test.js");
 </script>
 </body>
 </html>
