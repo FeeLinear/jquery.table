@@ -188,6 +188,15 @@ options = {
 }
 
 $(".insert_table").setJQueryTable(xData, yData, cData, options);
+	
+	$.ajax({
+		type: "GET",
+  		url: "https://feelinear.github.io/jquery.table/json/data.json",
+  		dataType: "json",
+		success: function(msg){
+	            console.log(msg);
+	        }
+	})
 </script>
 </body>
 </html>
