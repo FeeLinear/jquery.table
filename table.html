@@ -194,15 +194,16 @@ $(".insert_table").setJQueryTable(xData, yData, cData, options);
   		url: "https://feelinear.github.io/jquery.table/json/data.json",
   		dataType: "json",
 		success: function(msg){
-	            console.log(msg);	
+		    $.each(msg, function(index, data){
+		    	$(".insert_table").addNewCDataItem(data, function(){
+		            console.log("已添加JSON");
+			})
+		    })
 	        },
 		error: function(msg){
 		    console.log(msg);	
 		}
 	})
-	$.getJSON("json/data.json", function(json){
-	    $.each(json, function(){console.log(111)});
-	});
 	$.getScript("js/test.js");
 </script>
 </body>
