@@ -897,6 +897,10 @@
 					var newYIdKey = [];
 					var newYIdKeyStartIndex = $("#y_data_name_select_start").get(0).selectedIndex;
 					var newYIdKeyEndIndex = $("#y_data_name_select_end").get(0).selectedIndex;
+					if(newYIdKeyStartIndex > newYIdKeyEndIndex){
+					    alert("结束时间不能小于开始时间");
+					    return false;
+					}
 					for(var index=newYIdKeyStartIndex; index<=newYIdKeyEndIndex; index++){
 						newYIdKey.push($("#y_data_name_select_start").get(0).options[index].value);
 					}
