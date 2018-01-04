@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Document</title>
+    
+    <link rel="stylesheet" href="css/jquery.table.css">
+    <style type="text/css">
+	    body, html{
+		height: 100%;
+		padding: 0;
+		margin: 0;
+		}
+		.insert_table{
+			width: 900px;
+			height: 500px;
+			margin: 200px auto 0;
+			padding: 10px;
+		}
+    </style>
+</head>
+<body>
+<div class="insert_table">
+
+</div>
+
+<script type="text/javascript" src="libs/jquery_1.11.3.js"></script>
+<script type="text/javascript" src="js/jquery.table.js"></script>
+<script type="text/javascript">
+
+var xData, yData, cData, options;
+yData = 
+    [
+        {
+            uid: "y1",
+            uName: "08:00"
+		},
+		{
+            uid: "y2",
+            uName: "09:00"
+		},
+		{
+            uid: "y3",
+            uName: "10:00"
+		},
+		{
+            uid: "y4",
+            uName: "11:00"
+		},
+		{
+            uid: "y5",
+            uName: "12:00"
+		},
+		{
+            uid: "y6",
+            uName: "14:00"
+		},
+		{
+            uid: "y7",
+            uName: "15:00"
+		},
+		{
+            uid: "y8",
+            uName: "16:00"
+		},
+		{
+            uid: "y9",
+            uName: "17:00"
+		},
+		{
+            uid: "y10",
+            uName: "18:00"
+		},
+		{
+            uid: "y11",
+            uName: "20:00"
+		},
+		{
+            uid: "y12",
+            uName: "21:00"
+		},
+		{
+            uid: "y13",
+            uName: "22:00"
+		}
+    ]
+
+xData = 
+    [
+        {
+            uuid: "zhangyisheng",
+            uuName: "张医生"
+        },
+        {
+            uuid: "lizhuren",
+            uuName: "李主任"
+        },
+        {
+            uuid: "wangdachui",
+            uuName: "王大锤"
+        },
+        {
+            uuid: "niuyisheng",
+            uuName: "牛医生"
+        },
+        {
+            uuid: "chenyisheng",
+            uuName: "陈医生"
+        },
+        {
+            uuid: "dongboyisheng",
+            uuName: "东坡医生"
+        },
+        {
+            uuid: "qianzhuren",
+            uuName: "钱主任"
+        },
+        {
+            uuid: "luozhuren",
+            uuName: "罗副主任"
+        },
+        {
+            uuid: "lingyisheng",
+            uuName: "林医生"
+        }
+    ]
+	
+cData = 
+	[
+        {
+			id: "z1",
+            uuid: "zhangyisheng",
+			uid: ["y1","y2"],
+            uuName: "王明成"
+        },
+        {
+			id: "z3",
+            uuid: "lingyisheng",
+			uid: ["y1","y2"],
+            uuName: "李诗英"
+        },
+        {
+			id: "z5",
+            uuid: "luozhuren",
+			uid: ["y2","y3"],
+            uuName: "牛二新"
+        },
+        {
+			id: "z7",
+            uuid: "chenyisheng",
+			uid: ["y5","y6","y8"],
+            uuName: "李晶晶"
+        },
+        {
+			id: "z8",
+            uuid: "chenyisheng",
+			uid: ["y2"],
+            uuName: "徐林林"
+        }
+    ];
+
+	//dData = [];
+options = {
+	keyGroup: {
+		idKey: "id",
+		xIdKey: "uuid",
+		yIdKey: "uid",
+		txtKey: "uuName",
+		xTxtKey: "uuName",
+		yTxtKey: "uName",
+	},
+	tName: {
+		xName: "医生", 
+		yName: "时段"
+	},
+	cssProperty: {
+		tdHeight: 60,
+		tdWidth: 150,
+		tHeadHeight: 0,
+		tHeadWidth: 100,
+		tdRrightPadding: 20
+	},
+	addNewCDataCallBack: function(data, obj){
+		console.log(data)
+		obj.css("background", "red");
+	}
+}
+
+$(".insert_table").setJQueryTable(xData, yData, cData, options);
+</script>
+</body>
+</html>
