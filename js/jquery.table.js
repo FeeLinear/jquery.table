@@ -805,8 +805,7 @@
 				if(!(data instanceof Object)){
 					return;
 				}
-				self.cData.push(data);
-				self.tmpCData = JSON.parse(JSON.stringify(cData));
+				self.tmpCData.push(data);
 				self.refreshTableContent();
 				var thisItemBox = self.jQueryContentPosBox.find(".jquery_content_pos_item[data-value=" + data[self.idKey] + "]");
 				callback ? callback(data, thisItemBox) : "";
