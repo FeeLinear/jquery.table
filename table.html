@@ -90,21 +90,6 @@ $.ajax({
 	    console.log(msg);	
 	}
 })
-$.ajax({
-	type: "GET",
-	url: "json/data.json",
-	dataType: "json",
-	success: function(msg){
-	    $.each(msg, function(index, data){
-		$(".insert_table").addNewCDataItem(data, function(){
-		    console.log("已添加JSON");
-		})
-	    })
-	},
-	error: function(msg){
-	    console.log(msg);	
-	}
-})
 var timer = null;
 timer = setInterval(function(){
     if(xData&&yData&&cData){
@@ -112,8 +97,6 @@ timer = setInterval(function(){
         $(".insert_table").setJQueryTable(xData, yData, cData, options);
     }
 }, 100);
-
-$.getScript("js/test.js");
 </script>
 </body>
 </html>
