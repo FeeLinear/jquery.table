@@ -120,7 +120,7 @@
 }
 .jquery_content_pos_item{
 	position: absolute;
-	background: #886aea;
+	background-color: #886aea;
 	transition: all 0.2s linear;
 }
 .jquery_content_pos_item:hover .jquery_table_drag_box{
@@ -177,6 +177,7 @@
 	width: 100%;
 	right: 0px;
 	bottom: 0px;
+	padding-right: 0!important;
 }
 .y_scroll_table_box_wrap{
 	position: absolute;
@@ -290,7 +291,7 @@
 	line-height: 24px;
 	border: 1px solid #886AEA;
 	color: #fff;
-	background: #886AEA;
+	background-color: #886AEA;
 	margin-top: 10px;
 }
 .add_cdata_cancel{
