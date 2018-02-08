@@ -584,7 +584,7 @@
 			var self = this;
 			var judgeDevice = /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
 			if(judgeDevice){
-				self.dragContentBoxEventMoblie();
+				//self.dragContentBoxEventMoblie();
 				return;
 			}
 			var isMove = false;
