@@ -34,7 +34,7 @@
         _default: {
 			keyGroup: {
 				idKey: "id",
-				xIdKey: "xId",
+				xIdKey: "xId", 
 				yIdKey: "yId",
 				txtKey: "txt",
 				xTxtKey: "xTxt",
