@@ -1,7 +1,8 @@
 /**
  * Jquery.table plugin
- * Version 1.0.0 - 03 Jan 2018
+ * Version 2.3.2 - 03 Jan 2018
  * Copyright (c) 2018 by Feelinear:
+ * 1、新增双击表格添加数据方法
  * 
  *
  * self.jQueryTableContentBox  最外层BOX
@@ -50,7 +51,11 @@
                 tHeadWidth: 0,
 				tdRrightPadding: 20
             },
-			canDrag: true
+			canDrag: true,
+			fixedXScroll: false, //到存在横向滚动条时，是否需要在屏幕上始终显示横向滚动条
+			theme: {
+				itemColor: ""  //item背景色
+			}
         },
 		
         _init: function(){
@@ -263,16 +268,16 @@
 			self.xScrollTrue = createXScrollTrue.find(".x_scroll_table_box_true");
 			self.yScrollTrue = createYScrollTrue.find(".y_scroll_table_box_true");
 			createXScrollTrue.css({
-				"padding-left": self.options.cssProperty.tHeadWidth,
-				"padding-right": self.jQueryTableContentBox.css("padding-right"),
+				//"padding-left": self.options.cssProperty.tHeadWidth,  //滚动条样式优化
+				//"padding-right": self.jQueryTableContentBox.css("padding-right"),
 				"top": Math.min(self.jQueryInnerTableBox.outerHeight(), self.jQueryInnerTable.outerHeight()) + self.options.cssProperty.tHeadHeight
 			});
-			
+			/*
 			createYScrollTrue.css({
 				"padding-top": self.options.cssProperty.tHeadHeight,
 				"padding-bottom": self.jQueryTableContentBox.css("padding-bottom")
 			});
-			
+			*/
 			self.xScrollTrue.on("scroll", function (e) {
 				self.jQueryInnerTableBox.scrollLeft($(this).scrollLeft());
 				self.jQueryXHeadTableBox.scrollLeft($(this).scrollLeft());
@@ -281,6 +286,25 @@
 				self.jQueryInnerTableBox.scrollTop($(this).scrollTop());
 				self.jQueryYHeadTableBox.scrollTop($(this).scrollTop());
 			});
+			function judgeXScrollPosition(){
+				
+				if(self.jQueryInnerTableBox.offset().top + self.jQueryInnerTableBox.height() - $(window).scrollTop() > $(window).height() - 16){
+					createXScrollTrue.css({
+						"top": "inherit",
+						"position": "fixed",
+						"bottom": 0
+					});
+				}else{
+					createXScrollTrue.css({
+						"top": Math.min(self.jQueryInnerTableBox.outerHeight(), self.jQueryInnerTable.outerHeight()) + self.options.cssProperty.tHeadHeight,
+						"position": "absolute",
+						"bottom": "inherit"
+					});
+				}
+				createXScrollTrue.find(".x_scroll_table_true").animate({
+					"width": self.xScrollTrue.width() + jQueryInnerTable.width() - self.jQueryInnerTableBox.width()
+				});
+			}
 			function refreshScroll(){
 				if(jQueryInnerTable.outerWidth()-1 > self.jQueryInnerTableBox.width()){//表格宽度已超出
 					self.jQueryTableContentBox.css("padding-bottom", "16px");
@@ -290,9 +314,11 @@
 						"top": Math.min(self.jQueryInnerTableBox.outerHeight(), self.jQueryInnerTable.outerHeight()) + self.options.cssProperty.tHeadHeight
 					});
 					createXScrollTrue.find(".x_scroll_table_true").animate({
-						"width": jQueryInnerTable.width()
+						"width": self.xScrollTrue.width() + jQueryInnerTable.width() - self.jQueryInnerTableBox.width()
 					});
-					
+					if(self.options.fixedXScroll){
+						judgeXScrollPosition();
+					}
 				}else{
 					createXScrollTrue.hide();
 					self.jQueryTableContentBox.css("padding-bottom", "0");
@@ -303,7 +329,7 @@
 					createXScrollTrue.css("padding-right", "16px");
 					createYScrollTrue.css("display", "block");
 					createYScrollTrue.find(".y_scroll_table_true").animate({
-						"height": jQueryInnerTable.height()
+						"height": self.yScrollTrue.height() + jQueryInnerTable.height() - self.jQueryInnerTableBox.height()
 					});
 					self.jQueryTableContentBox.find(".jquery_y_head_table_box, .jquery_content_inner_box").off('wheel mousewheel DOMMouseScroll').on('wheel mousewheel DOMMouseScroll', function (e) {
 						self.mousewheelEvent = true;
@@ -338,6 +364,14 @@
 					refreshScroll();
 				}, 100);
 			});
+			if(self.options.fixedXScroll){
+				$(window).on("scroll", function(){
+					clearTimeout(timer);
+					timer = setTimeout(function(){
+						judgeXScrollPosition();
+					}, 300)
+				})
+			}
 		},
 		renderContentPosBox: function(){
 			var self = this;
@@ -454,6 +488,9 @@
 						self.jQueryContentPosBox.append(jQueryContentPosItems);
 						yIdArr = yIdArr.concat(totalKindArr[i][j][m][self.yIdKey]);
 					}
+					if(self.options.theme.itemColor){
+						$(".jquery_content_pos_item").css("background-color", self.options.theme.itemColor);
+					}
 					propertyData[i][j].mostNum = self.getMost(yIdArr);
 					//console.log(self.getMost(yIdArr))
 					uniqueYIdArr = self.unique(yIdArr);
@@ -545,6 +582,11 @@
 		},
 		dragContentBoxEvent: function(){
 			var self = this;
+			var judgeDevice = /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
+			if(judgeDevice){
+				self.dragContentBoxEventMoblie();
+				return;
+			}
 			var isMove = false;
 			var dragDom = $("<div class=jquery_table_drag_box><i class=drag_pull_up></i><b class=drag_pull_move></b><i class=drag_pull_down></i></div>");
 			self.jQueryContentPosBox.find(".jquery_content_pos_item").append(dragDom);
@@ -617,7 +659,7 @@
 							self.tmpCData[i][self.xIdKey] = self.jQueryXHeadTableBox.find("td.x_head_table_td").eq(newCols).attr("x_id");
 							self.tmpCData[i][self.yIdKey] = [];
 							for(var j=0; j<yLength; j++){
-								self.tmpCData[i][self.yIdKey].push(self.jQueryYHeadTableBox.find("td.y_head_table_td").eq(newRows + j).attr("y_id"));
+								self.tmpCData[i][self.yIdKey].push(self.jQueryYHeadTableBox.find("td.y_head_table_td").eq(newRows + j).attr("y_id"))
 							}
 							break;
 						}
@@ -738,6 +780,219 @@
 			});
 			
 		},
+		dragContentBoxEventMoblie: function(){
+			var self = this;
+			var isMove = false;
+			var dragDom = $("<div class=jquery_table_drag_box><i class=drag_pull_up></i><b class=drag_pull_move></b><i class=drag_pull_down></i></div>");
+			self.jQueryContentPosBox.find(".jquery_content_pos_item").append(dragDom);
+			//拖动事件
+			self.jQueryContentPosBox.find(".jquery_content_pos_item .drag_pull_move").on("touchstart", function(e){
+				var touch = e.touches[0];
+				var mX = Number(touch.pageX);
+				var mY = Number(touch.pageY);
+				var posItem = $(this).parents(".jquery_content_pos_item");
+				var dataId = posItem.data("domData")[self.idKey];
+				var yLength = posItem.data("domData")[self.yIdKey].length;
+				var tdWidth = self.jQueryInnerTableBox.find("td").eq(0).outerWidth();
+				var tdHeight = self.jQueryInnerTableBox.find("td").eq(0).outerHeight();
+				var tableWidth = self.jQueryInnerTableBox.find("table").outerWidth();
+				var tableHeight = self.jQueryInnerTableBox.find("table").outerHeight();
+				var xGap, yGap, newCols, newRows;
+				if(posItem.hasClass("disabled_drag"))
+					return;
+				posItem.css({
+					"width": tdWidth - 4,
+					"left": parseInt(posItem.attr("x")) * tdWidth + 2,
+					"opacity": 0.5,
+					"z-index": 1
+				})/*,100, function(){
+					xGap = e.clientX - posItem.offset().left ;
+					yGap = e.clientY - posItem.offset().top ;
+				})*/
+				xGap = mX - posItem.offset().left ;
+				yGap = mY - posItem.offset().top ;
+				//var timer = null;
+				$(document).on("touchmove",function (e) {
+					var touch = e.touches[0];
+					var mX = Number(touch.pageX);
+					var mY = Number(touch.pageY);
+					isMove = true;
+					e.preventDefault();
+					//clearTimeout(timer);
+					//timer = setTimeout(function(){
+						var aimX = mX /*- xGap*/ - self.jQueryContentPosBox.offset().left + $(window).scrollLeft();
+						var aimY = mY /*- yGap*/ - self.jQueryContentPosBox.offset().top + $(window).scrollTop();
+						aimX < 0 ? aimX = 0 : "";
+						aimY < 0 ? aimY = 0 : "";
+						aimX > tableWidth - tdWidth ? aimX = tableWidth - tdWidth : "";
+						aimY > tableHeight - tdHeight*yLength ? aimY = tableHeight - tdHeight*yLength : "";
+						newCols =  Math.floor(aimX/tdWidth);
+						newRows = Math.floor(aimY/tdHeight);
+						aimX = self.jQueryXHeadTableBox.find("td.x_head_table_td").eq(newCols).offset().left - self.jQueryXHeadTableBox.find("table").offset().left + 2
+						aimY = self.jQueryYHeadTableBox.find("td.y_head_table_td").eq(newRows).offset().top - self.jQueryYHeadTableBox.find("table").offset().top + 2
+						posItem.css({
+							"left": aimX,
+							"top": aimY
+						})
+						if(posItem.offset().left < self.jQueryInnerTableBox.offset().left){
+							self.xScrollTrue.stop(true).animate({
+								"scrollLeft": self.xScrollTrue.scrollLeft()- tdWidth
+							},30);
+						}else if(posItem.offset().left + tdWidth > self.jQueryInnerTableBox.offset().left + self.jQueryInnerTableBox.outerWidth()){
+							self.xScrollTrue.stop(true).animate({
+								"scrollLeft": self.xScrollTrue.scrollLeft()+ tdWidth
+							},30);
+						}
+						self.scrollUpOrDown(e, tdHeight);
+					//},30)
+					
+				});
+				$(document).on("touchend",function () {
+                    $(document).off("touchmove");
+                    $(document).off("touchend");
+					if(!isMove){
+						self.refreshTableContent();//重新排列组合
+						return;
+					}
+					isMove = false;
+                    for(var i=0; i<self.tmpCData.length; i++){
+						if(self.tmpCData[i][self.idKey] === dataId){
+							self.tmpCData[i][self.xIdKey] = self.jQueryXHeadTableBox.find("td.x_head_table_td").eq(newCols).attr("x_id");
+							self.tmpCData[i][self.yIdKey] = [];
+							for(var j=0; j<yLength; j++){
+								self.tmpCData[i][self.yIdKey].push(self.jQueryYHeadTableBox.find("td.y_head_table_td").eq(newRows + j).attr("y_id"))
+							}
+							break;
+						}
+					}
+					self.refreshTableContent();//刷新数据重新排列组合
+                });
+			});
+			//下拉事件
+			self.jQueryContentPosBox.find(".jquery_content_pos_item .drag_pull_down").on("touchstart", function(e){
+				var touch = e.touches[0];
+				var mX = Number(touch.pageX);
+				var mY = Number(touch.pageY);
+				var oY = mY - self.jQueryInnerTableBox.find("table").offset().top;
+				var posItem = $(this).parents(".jquery_content_pos_item");
+				var dataId = posItem.data("domData")[self.idKey];
+				var oStartRow = parseInt(posItem.attr("y"));
+				var totalTableRow = self.yData.length;
+				var yLength = posItem.data("domData")[self.yIdKey].length;
+				var tdHeight = self.jQueryInnerTableBox.find("td").eq(0).outerHeight();
+				var oHeight = yLength*tdHeight;
+				var aimHeight = 0;
+				var addRows = 0;
+				var aimY = 0;
+				posItem.css({
+					"opacity": 0.5,
+					"z-index": 1
+				})
+				//self.jQueryInnerTableBox
+				$(document).on("touchmove", function (e) {
+					var touch = e.touches[0];
+					var mX = Number(touch.pageX);
+					var mY = Number(touch.pageY);
+					e.preventDefault();
+					isMove = true;
+					aimY = mY - self.jQueryInnerTableBox.find("table").offset().top;
+					addRows = Math.round((aimY - oY)/tdHeight);
+					addRows < 1 - yLength ? addRows = 1 - yLength : "";
+					addRows > totalTableRow - oStartRow - yLength  ? addRows = totalTableRow - oStartRow - yLength : "";
+					aimHeight = oHeight + addRows * tdHeight;
+					posItem.css("height", aimHeight - 4);
+					self.scrollUpOrDown(e, tdHeight);
+				});
+				$(document).on("touchend",function () {
+                    $(document).off("touchmove");
+                    $(document).off("touchend");
+					if(!isMove){
+						self.refreshTableContent();//重新排列组合
+						return;
+					}
+					isMove = false;
+                    for(var i=0; i<self.tmpCData.length; i++){
+						if(self.tmpCData[i][self.idKey] === dataId){
+							if(addRows < 0){
+								while(addRows++){
+									self.tmpCData[i][self.yIdKey].pop();
+								}
+							}else if(addRows > 0){
+								for(var j=0; j<addRows; j++){
+									self.tmpCData[i][self.yIdKey].push(self.jQueryYHeadTableBox.find("td.y_head_table_td").eq(oStartRow + yLength + j).attr("y_id"));
+								}
+							}
+							break;
+						}
+					}
+					self.refreshTableContent();//刷新数据重新排列组合
+                });
+			});
+			//上拉事件
+			self.jQueryContentPosBox.find(".jquery_content_pos_item .drag_pull_up").on("touchstart", function(e){
+				var touch = e.touches[0];
+				var mX = Number(touch.pageX);
+				var mY = Number(touch.pageY);
+				var oY = mY - self.jQueryInnerTableBox.find("table").offset().top;
+				var posItem = $(this).parents(".jquery_content_pos_item");
+				var dataId = posItem.data("domData")[self.idKey];
+				var oStartRow = parseInt(posItem.attr("y"));
+				var yLength = posItem.data("domData")[self.yIdKey].length;
+				var tdHeight = self.jQueryInnerTableBox.find("td").eq(0).outerHeight();
+				var oHeight = yLength*tdHeight;
+				var oTop = parseInt(posItem.css("top"));
+				var aimHeight = 0;
+				var addRows = 0;
+				var aimY = 0;
+				posItem.css({
+					"opacity": 0.5,
+					"z-index": 1
+				})
+				$(document).on("touchmove", function (e) {
+					var touch = e.touches[0];
+					var mX = Number(touch.pageX);
+					var mY = Number(touch.pageY);
+					e.preventDefault();
+					isMove = true;
+					aimY = mY - self.jQueryInnerTableBox.find("table").offset().top;
+					addRows = Math.round((oY - aimY)/tdHeight);
+					addRows < 1 - yLength ? addRows = 1 - yLength : "";
+					addRows > oStartRow ? addRows =  oStartRow : "";
+					aimTop = oTop - addRows * tdHeight;
+					aimHeight = oHeight + addRows * tdHeight;
+					posItem.css({
+						"height": aimHeight - 4,
+						"top":  aimTop
+					});
+					self.scrollUpOrDown(e, tdHeight);
+				});
+				$(document).on("touchend",function () {
+                    $(document).off("touchmove");
+                    $(document).off("touchend");
+					if(!isMove){
+						self.refreshTableContent();//重新排列组合
+						return;
+					}
+					isMove = false;
+                    for(var i=0; i<self.tmpCData.length; i++){
+						if(self.tmpCData[i][self.idKey] === dataId){
+							if(addRows < 0){
+								while(addRows++){
+									self.tmpCData[i][self.yIdKey].shift();
+								}
+							}else if(addRows > 0){
+								for(var j=0; j<addRows; j++){
+									self.tmpCData[i][self.yIdKey].unshift(self.jQueryYHeadTableBox.find("td.y_head_table_td").eq(oStartRow - j - 1).attr("y_id"));
+								}
+							}
+							break;
+						}
+					}
+					self.refreshTableContent();//刷新数据重新排列组合
+                });
+			});
+			
+		},
 		refreshTableContent: function(){
 			this.getArrByXIdKeyAndRel(this.tmpCData);//按xIdKey分类后再按交集圈分类结果
 			this.orientationPosition(this.totalKindArr);//排列组合数据保存
@@ -802,7 +1057,7 @@
 				self.fillContentByKeywords(keywords);
 			});
 			self.jsDom.on("addNewCDataItem", function(e, data, callback){
-				if(!(data instanceof Object)){
+				if(!(data instanceof Object) && !data){
 					return;
 				}
 				self.tmpCData.push(data);
