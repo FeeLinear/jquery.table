@@ -20,15 +20,16 @@
 }
 .x_head_td_div, .y_head_td_div{
     position: absolute;
-	height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
+	height: auto;
+    width: auto;
+    top: 50%;
+    left: 50%;
     text-align: center;
 	padding: 2px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+	transform: translate(-50%, -50%);
 }
 .jquery_table_content_box:before {
     /*content: "";*/
