@@ -60,35 +60,34 @@
 		
         _init: function(){
             this.addStylesheet();//初始化宽高
-		alert(1)
             this.renderContentBox();//渲染外层盒子
-		alert(2)
+	
             this.renderLeftAndRightBox();//渲染左右侧盒子
-		alert(3)
+	
             this.renderTNameTable();//渲染左上角表名
-		alert(4)
+
             this.renderXHeadTable();//渲染上方表头
-		alert(5)
+
             this.renderYHeadTable();//渲染左侧表头
-		alert(6)
+	
 			this.renderContentTable();//渲染内部表格
-		alert(7)
+	
 			this.jQueryScrollTableFun();//自定义滚条计算
-		alert(8)
+	
 			this.renderContentPosBox();//渲染数据定位所参考的盒子
-		alert(9)
+	
 			this.getArrByXIdKeyAndRel(this.tmpCData);//按xIdKey分类后再按交集圈分类结果
-		alert(10)
+	
 			this.orientationPosition(this.totalKindArr);//排列组合数据保存
-		alert(11)
+		
 			this.setContentPosBox();//设置宽度、高度、以及位置
-		alert(12)
+	
 			this.resizeWindowRefreshContentBox();//改变窗口大小调整显示位置
-		alert(13)
+		
 			this.options.canDrag ? this.dragContentBoxEvent() : "";//拖拽事件
-		alert(14)
+		
 			this.bindSelfEvent();//绑定自定义事件
-		alert(15)
+	
 			this.doubleClickTdEvent();//双击表格弹窗
 			
         },
@@ -599,7 +598,7 @@
 			var self = this;
 			var judgeDevice = /Android|webOS|iPhone|iPad|BlackBerry/i.test(navigator.userAgent);
 			if(judgeDevice){
-				//self.dragContentBoxEventMoblie();
+				self.dragContentBoxEventMoblie();
 				return;
 			}
 			var isMove = false;
