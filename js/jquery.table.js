@@ -780,6 +780,7 @@
 			});
 			
 		},
+	    /*
 		dragContentBoxEventMoblie: function(){
 			document.body.ontouchmove = function(e){
 				e.preventDefault();//微信浏览禁用下拉显示来源
@@ -995,7 +996,7 @@
                 });
 			});
 			
-		},
+		},*/
 		refreshTableContent: function(){
 			this.getArrByXIdKeyAndRel(this.tmpCData);//按xIdKey分类后再按交集圈分类结果
 			this.orientationPosition(this.totalKindArr);//排列组合数据保存
