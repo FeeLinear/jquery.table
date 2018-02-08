@@ -781,6 +781,9 @@
 			
 		},
 		dragContentBoxEventMoblie: function(){
+			document.body.ontouchmove = function(e){
+				e.preventDefault();//微信浏览禁用下拉显示来源
+			}
 			var self = this;
 			var isMove = false;
 			var dragDom = $("<div class=jquery_table_drag_box><i class=drag_pull_up></i><b class=drag_pull_move></b><i class=drag_pull_down></i></div>");
